@@ -8,7 +8,7 @@ module.exports = React.createClass({
         return (
             <div>
                 <div>
-                    This is from the HelloWorld.jsx component's render function.
+                    This is from the HelloWorld.jsx render function.
                 </div>
                 <div>
                     Rendered from: {this.state.from}
