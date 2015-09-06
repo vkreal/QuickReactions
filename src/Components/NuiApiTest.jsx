@@ -14,11 +14,30 @@ module.exports = React.createClass({
         }.bind(this));
     },
     onClick_run: function(event) {
-         $.ajax({
+       var classValue = document.getElementById('Class').value;
+       if(classValue == "xx") {
+           return;
+       }
+       var params = [];
+       if( document.getElementById('Request').value	!= '{ /* void */ }' ) {
+            var jsonValues = JSON.parse(document.getElementById('Request').value);
+            if( jsonValues ) {
+                for(var key in jsonValues) {
+                    params.push(jsonValues[key] ? jsonValues[key] : '');
+                }
+            }
+       }
+       if((params.length == 1) && (typeof(params[0]) == 'object')) {
+	       params = params[0];
+	   }
+
+      var payload = [{action:classValue, method:document.getElementById('Method').value, data:params}];
+      
+       $.ajax({
             url: '/router',
             dataType: 'text',
             type: 'POST',
-            data: {'foo':1},
+            data: JSON.stringify(payload),
             success: function(data) {
                 document.getElementById('Response').value = data;
             }.bind(this),
@@ -31,8 +50,9 @@ module.exports = React.createClass({
         this.clear_TextArea();                
         var s = this.state.api_json[document.getElementById('Class').value][event.target.options[event.target.selectedIndex].value];
         if( s != '{ /* void */ }' ) {
-            try {                        
-                // s = FormatJSONPretty( s.evalJSON(), '  ');  
+            try {          
+                var json_data = JSON.parse(s);   // HACK TO MAKE FORMAT PRETTY :)              
+                s = JSON.stringify(json_data, null, 4); 
             }
             catch(e) {}                                                                                            
         }                

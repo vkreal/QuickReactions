@@ -13,20 +13,27 @@ app.use('/pages', express.static(path.join(__dirname, 'Pages')))
 
 app.post('/router', function (req, res) {
     res.writeHead(200, {'Content-Type': 'application/json'})
+    var postData = "";
     
-    var options = {
-        uri : 'http://10.2.16.71/expense/expensedotnet/proxy/Router.ashx',
-        method : 'POST',
-        json: true,
-        body: [{"action": "ExpenseReport", "method": "GetReportsList", "data": ["", "", "", "", "", "", "", "", ""]}]
-    };
-    
-    rp(options)
-    .then(function (response) {
-        res.end(response)
-    })
-    .catch(function (response) {
-        res.end("{success:0}")
+    req.on('data', function(data) {
+        postData += data;    
+    });
+    req.on('end', function () {
+        console.log('POSTed: ' + postData);
+        var options = {
+            uri : 'http://10.2.16.71/expense/expensedotnet/proxy/Router.ashx',
+            method : 'POST',
+            json: true,
+            body: JSON.parse(postData)  //[{"action": "ExpenseReport", "method": "GetReportsList", "data": ["", "", "", "", "", "", "", "", ""]}]
+        };
+        
+        rp(options)
+        .then(function (response) {
+            res.end(response)
+        })
+        .catch(function (response) {
+            res.end("{success:0}")
+        }); 
     });
 })
 
