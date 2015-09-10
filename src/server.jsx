@@ -21,7 +21,7 @@ app.post('/router', function (req, res) {
     req.on('end', function () {
         console.log('POSTed: ' + postData);
         var options = {
-            uri : 'http://10.2.16.71/expense/expensedotnet/proxy/Router.ashx',
+            uri : 'http://10.2.16.71/expense/expensedotnet/proxy/NuiRouter.ashx',
             method : 'POST',
             json: true,
             body: JSON.parse(postData)  //[{"action": "ExpenseReport", "method": "GetReportsList", "data": ["", "", "", "", "", "", "", "", ""]}]
@@ -29,7 +29,8 @@ app.post('/router', function (req, res) {
         
         rp(options)
         .then(function (response) {
-            res.end(response)
+            var s = typeof response == "string" ? response : JSON.stringify(response)
+            res.end(s)
         })
         .catch(function (response) {
             res.end("{success:0}")
